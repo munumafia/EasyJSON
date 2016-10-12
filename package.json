@@ -1,15 +1,20 @@
 {
-  "name": "parser",
+  "name": "easy-json",
   "version": "1.0.0",
-  "description": "",
+  "description": "Domain specific language for generating JSON documents",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Sean Grimes <sean@codemunkey.net>",
   "license": "ISC",
   "dependencies": {
     "gulp-typescript": "^3.0.2",
+    "merge2": "^1.0.2",
     "typescript": "^2.0.3"
+  },
+  "devDependencies": {
+    "gulp-sourcemaps": "^2.0.1",
+    "gulp-typescript": "^3.0.2"
   }
 }
