@@ -20,10 +20,22 @@ const STRING = /^".*"$/;
 
 /** Represents a token in the program input */
 export class Token {
+    /** The line number the token appears on */
+    public lineNumber : number;
+
+    /** The index where the token starts within the line */
+    public position: number;
+
+    /** The type of the token (number, string, etc.) */
     public tokenType: TokenType;
+
+    /** The text that was tokenized from the program input */
     public value: string;
 
-    constructor(tokenType: TokenType, value: string) {
+    /** Constructor */
+    constructor(tokenType: TokenType, value: string, lineNumber: number, position: number) {
+        this.lineNumber = lineNumber;
+        this.position = position;
         this.tokenType = tokenType;
         this.value = value;
     }
@@ -63,7 +75,7 @@ export class Lexer {
             this.streamIndex++;
         }
 
-        let token = new Token(TokenType.Comment, this.lexeme);
+        let token = new Token(TokenType.Comment, this.lexeme, this.lineNumber, this.position);
         this.tokens.push(token);
         this.lexeme = '';
     }
@@ -104,7 +116,7 @@ export class Lexer {
             this.streamIndex++;
         }
 
-        let token = new Token(TokenType.String, this.lexeme);
+        let token = new Token(TokenType.String, this.lexeme, this.lineNumber, this.position);
         this.tokens.push(token);
         this.lexeme = '';
     }
@@ -144,7 +156,7 @@ export class Lexer {
             }
 
             if (this.currentChar == '\t') {
-                let token = new Token(TokenType.Indent, this.currentChar);
+                let token = new Token(TokenType.Indent, this.currentChar, this.lineNumber, this.position);
                 this.tokens.push(token);
                 this.lexeme = '';
 
@@ -152,7 +164,7 @@ export class Lexer {
             }
 
             if (this.currentChar == '=') {
-                let token = new Token(TokenType.EqualSign, this.currentChar);
+                let token = new Token(TokenType.EqualSign, this.currentChar, this.lineNumber, this.position);
                 this.tokens.push(token);
                 this.position++;
                 this.lexeme = '';
@@ -168,37 +180,37 @@ export class Lexer {
 
     private matchToken(lexeme : string) : Token {
         if (COMMENT.test(lexeme)) {
-            let token = new Token(TokenType.Comment, lexeme);
+            let token = new Token(TokenType.Comment, lexeme, this.lineNumber, this.position);
             return token;
         }
 
         if (TYPE.test(lexeme)) {
-            let token = new Token(TokenType.Type, lexeme);
+            let token = new Token(TokenType.Type, lexeme, this.lineNumber, this.position);
             return token;
         }
 
         if (IDENTIFIER.test(lexeme)) {
-            let token = new Token(TokenType.Identifier, lexeme);
+            let token = new Token(TokenType.Identifier, lexeme, this.lineNumber, this.position);
             return token;
         }
 
         if (NUMBER.test(lexeme)) {
-            let token = new Token(TokenType.Number, lexeme);
+            let token = new Token(TokenType.Number, lexeme, this.lineNumber, this.position);
             return token;
         }
 
         if (STRING.test(lexeme)) {
-            let token = new Token(TokenType.String, lexeme);
+            let token = new Token(TokenType.String, lexeme, this.lineNumber, this.position);
             return token;
         }
 
         if (Date.parse(lexeme) != NaN) {
-            let token = new Token(TokenType.Date, lexeme);
+            let token = new Token(TokenType.Date, lexeme, this.lineNumber, this.position);
             return token;
         }
 
         // Nothing matched
-        return new Token(TokenType.Unknown, lexeme);
+        return new Token(TokenType.Unknown, lexeme, this.lineNumber, this.position);
     }
 
     private peekNext() : string {
