@@ -1,0 +1,15 @@
+// This is a comment
+product = "Live JSON generator"
+
+// Number, Date & Boolean are also supported
+// Specify types after property names
+version number = 3.1
+releaseDate date = 2014-06-25
+demo bool = true
+
+person
+	id number = 12345
+	name = "John Doe"
+	phones
+		home = "800-123-4567"
+		mobile = "877-123-1234"
