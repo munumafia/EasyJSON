@@ -115,49 +115,28 @@ class Identifier extends Symbol {
     }
 }
 
-class AbstractSyntaxTreeVisitor implements IVisitor {
-    public visitComment(comment : Comment) {
-        // ...
-    }
-
-    public visitDocument(document : Document) {
-        // ...
-    }
-
-    public visitEqualSign(equalSign : EqualSign) {
-        // ...
-    }
-
-    public visitIdentifier(identifier : Identifier) {
-        // ...
-    }
-
-    public visitType(type : Type) {
-        // ...
-    }
-}
-
 class TokenToSymbolMapper {
     public map(token : Token) : ISymbol {
-        switch (token.tokenType) {
-            case TokenType.Comment:
-                return this.mapComment(token);
-            case TokenType.EqualSign:
-                return this.mapEqualSign(token);
-            case TokenType.Identifier:
-                return this.mapIdentifier(token);
-            case TokenType.String:
-                return this.mapString(token);
-            case TokenType.Tab:
-                return this.mapTab(token);
-            case TokenType.Type:
-                return this.mapType(token);
-            default:
-                throw "Unknown token encountered";
-        }
+        let lookupMap = {};
+        
+        lookupMap[TokenType.Comment] = this.mapComment;
+        lookupMap[TokenType.Date] = this.mapDate;
+        lookupMap[TokenType.EqualSign] = this.mapEqualSign; 
+        lookupMap[TokenType.Identifier] =  this.mapIdentifier;
+        lookupMap[TokenType.Number] = this.mapNumber;
+        lookupMap[TokenType.String] = this.mapString;
+        lookupMap[TokenType.Tab] = this.mapTab;
+        lookupMap[TokenType.Type] = this.mapType;
+
+        let mapper = lookupMap[token.tokenType];
+        if (mapper) return mapper(token);   
     }
 
     private mapComment(token : Token) : ISymbol {
+        return null;
+    }
+
+    private mapDate(token : Token) : ISymbol {
         return null;
     }
 
@@ -166,6 +145,10 @@ class TokenToSymbolMapper {
     }
 
     private mapIdentifier(token : Token) : ISymbol {
+        return null;
+    }
+
+    private mapNumber(token : Token) : ISymbol {
         return null;
     }
 
