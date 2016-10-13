@@ -174,36 +174,68 @@ class TokenToSymbolMapper {
         if (mapper) return mapper(token);   
     }
 
-    private mapComment(token : Token) : ISymbol {
-        return null;
+    private mapComment(token : Token) : Comment {
+        return new Comment(
+            token.lineNumber, 
+            null, 
+            token.position, 
+            token.value);
     }
 
-    private mapDate(token : Token) : ISymbol {
-        return null;
+    private mapDate(token : Token) : DateSymbol {
+        return new DateSymbol(
+            token.lineNumber,
+            null,
+            token.position,
+            token.value);
     }
 
-    private mapEqualSign(token : Token) : ISymbol {
-        return null;
+    private mapEqualSign(token : Token) : EqualSign {
+        return new EqualSign(
+            token.lineNumber,
+            null,
+            token.position,
+            token.value);
     }
 
-    private mapIdentifier(token : Token) : ISymbol {
-        return null;
+    private mapIdentifier(token : Token) : Identifier {
+        return new Identifier(
+            token.lineNumber,
+            null,
+            token.position,
+            token.value);        
     }
 
-    private mapNumber(token : Token) : ISymbol {
-        return null;
+    private mapNumber(token : Token) : NumberSymbol {
+        return new NumberSymbol(
+            token.lineNumber,
+            null,
+            token.position,
+            token.value); 
     }
 
-    private mapString(token : Token) : ISymbol {
-        return null;
+    private mapString(token : Token) : StringSymbol {
+        return new StringSymbol(
+            token.lineNumber,
+            null,
+            token.position,
+            token.value); 
     }
 
-    private mapTab(token : Token) : ISymbol {
-        return null;
+    private mapTab(token : Token) : TabSymbol {
+        return new TabSymbol(
+            token.lineNumber,
+            null,
+            token.position,
+            token.value);
     }
 
-    private mapType(token : Token) : ISymbol {
-        return null;
+    private mapType(token : Token) : Type {
+        return new Type(
+            token.lineNumber,
+            null,
+            token.position,
+            token.value);
     }
 }
 
