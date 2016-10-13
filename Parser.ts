@@ -360,8 +360,14 @@ export class Parser {
         let document = this.document;
         let mapper = new TokenToSymbolMapper();
 
-        // First round of parsing, convert all tokens to symbols
-        let symbols = this.tokens.map(token => mapper.map(token));
+        // First round of parsing, convert all tokens to symbols and create
+        // a linked list
+        let symbolList = new LinkedList<ISymbol>();
+        let symbols = this.tokens.map(token => {
+            let symbol = mapper.map(token)
+            let node = new Node<ISymbol>(symbol);
+            symbolList.push(node);
+        });
 
         return null;
     }
