@@ -1,0 +1,17 @@
+Program      -> Block                                              | Block Block
+Statement    -> Declaration                                        | Identifier         | Assignment
+Declaration  -> Identifier                                         | Identifier Type 
+Identifier   -> AlphaNumeric                                       | Tabs AlphaNumeric
+Assignment   -> Declaration EqualSign Value
+Type         -> Bool                                               | Number             | String
+AlphaNumeric -> Alpha Numeric
+Alpha        -> Alpha Alpha                                        | /[a-zA-Z]/
+Tabs         -> Tabs Tabs                                          | \t
+Numeric      -> Numeric Numeric                                    | /[0-9]/
+Number       -> Number.Number
+Character    -> /[a-zA-Z]`~!@#$%^&*\(\)-_=+|\\:;'\?<>,\./
+Quote        -> "
+String       -> Quote Character Quote                              | Character Character
+EqualSign    -> =
+NewLine      -> \r\n | \n
+Block        -> Statement | Statement Statement
