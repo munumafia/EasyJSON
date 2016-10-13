@@ -3,9 +3,11 @@ import {TokenType} from "./Lexer";
 
 enum SymbolType {
     Comment,
+    Date,
     Document,
     EqualSign,
     Identifier,
+    Number,
     String,
     Tab,
     Type,
@@ -91,6 +93,46 @@ class EqualSign extends Symbol {
 
     public visit(visitor : IVisitor) {
         visitor.visitEqualSign(this);
+    }
+}
+
+class DateSymbol extends Symbol {
+    public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
+        super(lineNumber, parent, position, SymbolType.Date, text);        
+    }
+
+    public visit(visitor : IVisitor) {
+        // To do
+    }
+}
+
+class NumberSymbol extends Symbol {
+    public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
+        super(lineNumber, parent, position, SymbolType.Number, text);        
+    }
+
+    public visit(visitor : IVisitor) {
+        // To do
+    }
+}
+
+class StringSymbol extends Symbol {
+    public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
+        super(lineNumber, parent, position, SymbolType.Number, text);        
+    }
+
+    public visit(visitor : IVisitor) {
+        // To do
+    }
+}
+
+class TabSymbol extends Symbol {
+    public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
+        super(lineNumber, parent, position, SymbolType.Number, text);        
+    }
+
+    public visit(visitor : IVisitor) {
+        // To do
     }
 }
 
