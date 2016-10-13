@@ -15,3 +15,4 @@ String       -> Quote Character Quote                              | Character C
 EqualSign    -> =
 NewLine      -> \r\n | \n
 Block        -> Statement | Statement Statement
+Value        -> Bool | Number | String
