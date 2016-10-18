@@ -34,7 +34,7 @@ export class LinkedList<TValue> {
         if (!target.next) {
             target.next = insertee;
             insertee.previous = target;
-            this.head = insertee;
+            this.tail = insertee;
 
             return;
         }
@@ -45,10 +45,10 @@ export class LinkedList<TValue> {
     }
 
     public push(newNode : Node<TValue>) {
-        // Empty list
-        if (!this.head) {
+        if (this.head == null) {
             this.head = newNode;
             this.tail = this.head;
+            return;
         }
 
         newNode.previous = this.tail;
@@ -79,20 +79,26 @@ export class LinkedList<TValue> {
         if (this.head === this.tail) {
             this.head = null;
             this.tail = null;
+            
+            return;
         }
 
         if (node === this.tail) { 
             this.tail = node.previous;
             this.tail.next = null;
+
+            return;
         }
 
         if (node === this.head) {
             this.head = node.next;
             this.head.previous = null;
+
+            return; 
         }
 
-        node.next = null;
-        node.previous = null;        
+        node.next.previous = node.previous;
+        node.previous.next = node.next;             
     }
 
     private checkInsertArguments(insertee : Node<TValue>, target : Node<TValue>) {

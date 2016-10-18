@@ -3,6 +3,9 @@ import {Token} from "./Lexer"
 import {IVisitor} from "./Visitors"
 
 export enum SymbolType {
+    Assignment,
+    Block,
+    Bool,
     Comment,
     Date,
     Document,
@@ -53,6 +56,19 @@ export abstract class Symbol implements ISymbol {
     abstract visit(visitor : IVisitor) : void;
 }
 
+export class BlockSymbol extends Symbol {
+    public indentLevel : number = 0;
+    public statements : StatementSymbol[] = [];
+
+    public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
+        super(lineNumber, parent, position, SymbolType.EqualSign, text);        
+    }
+
+    public visit(visitor : IVisitor) {
+        // To do
+    }
+}
+
 export class Comment extends Symbol {
     public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
         super(lineNumber, parent, position, SymbolType.Comment, text);        
@@ -63,6 +79,16 @@ export class Comment extends Symbol {
     }
 }
 
+export class DeclarationSymbol extends Symbol {
+    public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
+        super(lineNumber, parent, position, SymbolType.EqualSign, text);        
+    }
+
+    public visit(visitor : IVisitor) {
+        // To do
+    }
+}
+ 
 export class Document extends Symbol {
     /** Ordered list of all the child symbols that belong to the document (comments, identifiers, etc.) */
     public children : ISymbol[];
@@ -89,7 +115,21 @@ export class EqualSign extends Symbol {
     }
 }
 
-export class DateSymbol extends Symbol {
+export abstract class ValueSymbol extends Symbol {
+
+} 
+
+export class BoolSymbol extends ValueSymbol {
+    public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
+        super(lineNumber, parent, position, SymbolType.Bool, text);        
+    }
+
+    public visit(visitor : IVisitor) {
+        // To do
+    }
+}
+
+export class DateSymbol extends ValueSymbol {
     public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
         super(lineNumber, parent, position, SymbolType.Date, text);        
     }
@@ -99,7 +139,7 @@ export class DateSymbol extends Symbol {
     }
 }
 
-export class NumberSymbol extends Symbol {
+export class NumberSymbol extends ValueSymbol {
     public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
         super(lineNumber, parent, position, SymbolType.Number, text);        
     }
@@ -109,9 +149,40 @@ export class NumberSymbol extends Symbol {
     }
 }
 
-export class StringSymbol extends Symbol {
+export abstract class StatementSymbol extends Symbol {
+    public constructor(lineNumber : number, parent : ISymbol, position : number, symbolType: SymbolType, text : string) {
+        super(lineNumber, parent, position, symbolType, text);        
+    }    
+}
+
+export class AssignmentSymbol extends StatementSymbol {
+    public leftHandSide : ISymbol = null;
+    public rightHandSide : ISymbol = null;
+
     public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
-        super(lineNumber, parent, position, SymbolType.Number, text);        
+        super(lineNumber, parent, position, SymbolType.Assignment, text);        
+    }
+
+    public visit(visitor : IVisitor) {
+        // To do
+    }
+}
+
+export class Identifier extends StatementSymbol {
+    public type : Type;
+
+    public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
+        super(lineNumber, parent, position, SymbolType.Identifier, text);        
+    }
+
+    public visit(visitor : IVisitor) {
+        visitor.visitIdentifier(this);
+    }
+}
+
+export class StringSymbol extends ValueSymbol {
+    public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
+        super(lineNumber, parent, position, SymbolType.String, text);        
     }
 
     public visit(visitor : IVisitor) {
@@ -135,18 +206,7 @@ export class Type extends Symbol {
     }
 
     public visit(visitor : IVisitor) {
-        visitor.visitIdentifier(this);
-    }
-}
-
-export class Identifier extends Symbol {
-       
-    public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
-        super(lineNumber, parent, position, SymbolType.EqualSign, text);        
-    }
-
-    public visit(visitor : IVisitor) {
-        visitor.visitIdentifier(this);
+        // To do
     }
 }
 
@@ -154,17 +214,28 @@ export class TokenToSymbolMapper {
     public map(token : Token) : ISymbol {
         let lookupMap = {};
         
+        lookupMap[TokenType.Bool] = this.mapBool;
         lookupMap[TokenType.Comment] = this.mapComment;
         lookupMap[TokenType.Date] = this.mapDate;
         lookupMap[TokenType.EqualSign] = this.mapEqualSign; 
         lookupMap[TokenType.Identifier] =  this.mapIdentifier;
         lookupMap[TokenType.Number] = this.mapNumber;
         lookupMap[TokenType.String] = this.mapString;
-        lookupMap[TokenType.Tab] = this.mapTab;
+        lookupMap[TokenType.Indent] = this.mapTab;
         lookupMap[TokenType.Type] = this.mapType;
 
         let mapper = lookupMap[token.tokenType];
-        if (mapper) return mapper(token);   
+        if (mapper) return mapper(token);
+
+        console.log(token); 
+    }
+
+    private mapBool(token : Token) : BoolSymbol {
+        return new BoolSymbol(
+            token.lineNumber,
+            null,
+            token.position,
+            token.value);
     }
 
     private mapComment(token : Token) : Comment {

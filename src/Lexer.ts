@@ -1,5 +1,6 @@
 /** Enum containing the different token types */
 export enum TokenType {
+    Bool,
     Comment,
     Date,
     EqualSign,
@@ -7,7 +8,6 @@ export enum TokenType {
     Indent,
     Number,
     String,
-    Tab,
     Type,
     Unknown
 }
@@ -15,6 +15,7 @@ export enum TokenType {
 const COMMENT = /^\/\/.*$/;
 const IDENTIFIER = /^\t*[a-zA-Z]+([a-zA-Z]|[0-9])*$/;
 const NUMBER = /^[0-9]+(\.[0-9]+)?$/;
+const BOOL = /^true|false/;
 const TYPE = /^bool|number|string|date$/;
 const STRING = /^".*"$/;
 
@@ -186,6 +187,11 @@ export class Lexer {
 
         if (TYPE.test(lexeme)) {
             let token = new Token(TokenType.Type, lexeme, this.lineNumber, this.position);
+            return token;
+        }
+
+        if (BOOL.test(lexeme)) {
+            let token = new Token(TokenType.Bool, lexeme, this.lineNumber, this.position);
             return token;
         }
 

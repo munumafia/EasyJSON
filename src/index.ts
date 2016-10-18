@@ -10,9 +10,9 @@ fs.readFile("program.txt", "utf8", (err, data) => {
     
     let lexer = new Lexer();
     let tokens = lexer.lex(data);
-    console.log(tokens);
+    //console.log(tokens);
 
     let parser = new Parser(tokens, data);
     let document = parser.parse();
-    console.log(document);
+    //console.log(document);
 });
