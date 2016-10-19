@@ -43,21 +43,12 @@ export class Parser {
 
         // Second round, handle any identifiers
         this.handleIdentifiers(symbolList);
-        console.log("Handled identifiers");
-
-        //printList(symbolList);
-
+        
         // Third round, handle any assignments
         this.handleEqualSign(symbolList);
-        console.log("Handled equal sign");
-
-        // Third round, convert to statements
+        
+        // Fourth round, convert to statements
         this.handleStatements(symbolList);
-
-        // Fourth round, convert to blocks
-
-        //printList(symbolList);
-        printSymbols(symbolList);
 
         return null;
     }
@@ -108,7 +99,7 @@ export class Parser {
                 symbolList.removeNode(node.next);
             }
 
-            node = node.next;           
+            node = node.next;
         } 
     }
 
@@ -117,25 +108,23 @@ export class Parser {
         while (node != null) {
             let symbol = node.value;
 
-            if (symbol.symbolType == symbols.SymbolType.EqualSign) {
+            if (symbol instanceof symbols.EqualSign) {
                 let equalSign = symbol as symbols.EqualSign;
                 let statement = new symbols.AssignmentSymbol(equalSign.lineNumber, null, equalSign.position, equalSign.text);
                 statement.leftHandSide = equalSign.leftHandSide;
                 statement.rightHandSide = equalSign.rightHandSide;
 
-                symbolList.insertAfter(new Node(statement), node);
-                symbolList.removeNode(node);
-
+                symbolList.replaceNode(new Node(statement), node);
                 node = node.next;
+                
                 continue;
             }
 
-            if (symbol.symbolType == symbols.SymbolType.Identifier) {
+            if (symbol instanceof symbols.Identifier) {
                 let statement = new symbols.DeclarationSymbol(symbol.lineNumber, null, symbol.position, symbol.text);
-                symbolList.insertAfter(new Node(statement), node);
-                symbolList.removeNode(node);
-
+                symbolList.replaceNode(new Node(statement), node);
                 node = node.next;
+                
                 continue;
             }
 
