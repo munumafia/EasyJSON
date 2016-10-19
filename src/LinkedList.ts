@@ -30,8 +30,7 @@ export class LinkedList<TValue> {
     public insertAfter(insertee : Node<TValue>, target : Node<TValue>) {
         this.checkInsertArguments(insertee, target);
 
-        // Insert after the end of the list
-        if (!target.next) {
+        if (target == this.tail) {
             target.next = insertee;
             insertee.previous = target;
             this.tail = insertee;
@@ -39,9 +38,14 @@ export class LinkedList<TValue> {
             return;
         }
 
+        // Create a bi-directional link between the insertee and the target's 
+        // immediate sibling
         insertee.next = target.next;
+        insertee.next.previous = insertee;
+
+        // Create a bi-direction link between the target and the insertee
         insertee.previous = target;
-        target.next = insertee;
+        insertee.previous.next = insertee;        
     }
 
     public push(newNode : Node<TValue>) {
@@ -99,6 +103,13 @@ export class LinkedList<TValue> {
 
         node.next.previous = node.previous;
         node.previous.next = node.next;             
+    }
+
+    public replaceNode(replaceWith : Node<TValue>, replacee : Node<TValue>) {
+        let insertAfter = replacee.previous || this.head;
+        
+        this.insertAfter(replaceWith, insertAfter);
+        this.removeNode(replacee);                
     }
 
     private checkInsertArguments(insertee : Node<TValue>, target : Node<TValue>) {
