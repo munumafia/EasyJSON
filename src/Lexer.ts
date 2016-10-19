@@ -13,6 +13,7 @@ export enum TokenType {
 }
 
 const COMMENT = /^\/\/.*$/;
+const DATE = /^\d{4}-\d{1,2}-\d{1,2}$/;
 const IDENTIFIER = /^\t*[a-zA-Z]+([a-zA-Z]|[0-9])*$/;
 const NUMBER = /^[0-9]+(\.[0-9]+)?$/;
 const BOOL = /^true|false/;
@@ -180,43 +181,22 @@ export class Lexer {
     }
 
     private matchToken(lexeme : string) : Token {
-        if (COMMENT.test(lexeme)) {
-            let token = new Token(TokenType.Comment, lexeme, this.lineNumber, this.position);
-            return token;
-        }
+        let mappings = [
+            { pattern: COMMENT, tokenType: TokenType.Comment },
+            { pattern: TYPE, tokenType: TokenType.Type },
+            { pattern: BOOL, tokenType: TokenType.Bool },
+            { pattern: IDENTIFIER, tokenType: TokenType.Identifier },
+            { pattern: NUMBER, tokenType: TokenType.Number },
+            { pattern: STRING, tokenType: TokenType.String },
+            { pattern: DATE, tokenType: TokenType.Date },
+            { pattern: /.*/, tokenType: TokenType.Unknown }
+        ];
 
-        if (TYPE.test(lexeme)) {
-            let token = new Token(TokenType.Type, lexeme, this.lineNumber, this.position);
-            return token;
-        }
+        let match = mappings.find(element => {
+            return element.pattern.test(lexeme);
+        });
 
-        if (BOOL.test(lexeme)) {
-            let token = new Token(TokenType.Bool, lexeme, this.lineNumber, this.position);
-            return token;
-        }
-
-        if (IDENTIFIER.test(lexeme)) {
-            let token = new Token(TokenType.Identifier, lexeme, this.lineNumber, this.position);
-            return token;
-        }
-
-        if (NUMBER.test(lexeme)) {
-            let token = new Token(TokenType.Number, lexeme, this.lineNumber, this.position);
-            return token;
-        }
-
-        if (STRING.test(lexeme)) {
-            let token = new Token(TokenType.String, lexeme, this.lineNumber, this.position);
-            return token;
-        }
-
-        if (Date.parse(lexeme) != NaN) {
-            let token = new Token(TokenType.Date, lexeme, this.lineNumber, this.position);
-            return token;
-        }
-
-        // Nothing matched
-        return new Token(TokenType.Unknown, lexeme, this.lineNumber, this.position);
+        return new Token(match.tokenType, lexeme, this.lineNumber, this.position);
     }
 
     private peekNext() : string {
