@@ -60,14 +60,8 @@ export class Lexer {
         while (!this.isEol() && this.peekNext() != null) {
             this.currentChar = this.input[this.streamIndex];
 
-            if (this.currentChar == '\r') {
-                this.position += 2;
-                break;
-            } 
-            
-            if (this.currentChar == '\n') {
-                this.position += 1;
-                break;
+            if (this.currentChar == '\r' || this.currentChar == '\n') {
+                 break;
             }
 
             this.lexeme += this.currentChar;
@@ -79,6 +73,7 @@ export class Lexer {
         let token = new Token(TokenType.Comment, this.lexeme, this.lineNumber, this.position);
         this.tokens.push(token);
         this.lexeme = '';
+        this.rewind(1);
     }
 
     private handleSpace() {
@@ -97,7 +92,7 @@ export class Lexer {
             this.tokens.push(token);
         }
         
-        this.lineNumber = 1;
+        this.lineNumber++;
         this.position = 0;
         this.lexeme = '';
     }
@@ -136,6 +131,16 @@ export class Lexer {
         for (this.streamIndex = 0; this.streamIndex < this.input.length; this.streamIndex++) {
             this.currentChar = input[this.streamIndex];
 
+            if (this.currentChar == '\r') {
+                // Stupid Windows, just consume the character
+                continue;
+            }
+
+            if (this.currentChar == '\n') {
+                this.handleNewline();
+                continue;             
+            }
+
             if (this.currentChar == '/' && this.peekNext() == '/') {
                 this.handleComment();
                 continue;
@@ -149,11 +154,6 @@ export class Lexer {
             if (this.currentChar == ' ') {
                 this.handleSpace();
                 continue;
-            }
-
-            if (this.currentChar == '\n' || (this.currentChar == '\r' && this.peekNext() == '\n')) {
-                this.handleNewline();
-                continue;             
             }
 
             if (this.currentChar == '\t') {
@@ -227,5 +227,8 @@ export class Lexer {
         return this.input[this.streamIndex+1];
     }
 
-    
+    private rewind(count : number) {
+        this.streamIndex -= count;
+        if (this.streamIndex < 0) this.streamIndex = 0;
+    }    
 }
