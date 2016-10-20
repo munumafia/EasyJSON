@@ -58,7 +58,7 @@ export abstract class Symbol implements ISymbol {
 
 export class BlockSymbol extends Symbol {
     public indentLevel : number = 0;
-    public statements : StatementSymbol[] = [];
+    public children : ISymbol[] = [];
 
     public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
         super(lineNumber, parent, position, SymbolType.EqualSign, text);        
@@ -85,7 +85,7 @@ export class DeclarationSymbol extends Symbol {
     }
 
     public visit(visitor : IVisitor) {
-        // To do
+        visitor.visitStatement(this);
     }
 }
  
@@ -164,7 +164,7 @@ export class AssignmentSymbol extends StatementSymbol {
     }
 
     public visit(visitor : IVisitor) {
-        // To do
+        visitor.visitStatement(this);
     }
 }
 
@@ -196,7 +196,7 @@ export class TabSymbol extends Symbol {
     }
 
     public visit(visitor : IVisitor) {
-        // To do
+        visitor.visitTab(this);
     }
 }
 

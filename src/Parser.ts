@@ -2,6 +2,7 @@ import {Token} from "./Lexer";
 import {TokenType} from "./Lexer";
 import * as symbols from "./Symbols"
 import {Node, LinkedList} from "./LinkedList"
+import {IVisitor} from "./Visitors"
 
 function printList(list : LinkedList<symbols.ISymbol>) {
     let node = list.head;
@@ -16,6 +17,128 @@ function printSymbols(list : LinkedList<symbols.ISymbol>) {
     while (node != null) { 
         console.log(node.value);
         node = node.next;
+    }
+}
+
+class BlockVisitor implements IVisitor {
+    private currentBlock : symbols.BlockSymbol = null;
+    private currentNode : Node<symbols.ISymbol>;
+    private deepestBlock : symbols.BlockSymbol = null;
+    private indentLevel : number = 0;
+    private symbolList : LinkedList<symbols.ISymbol>;
+
+    public constructor(symbolList : LinkedList<symbols.ISymbol>) {
+        this.symbolList = symbolList;
+    }
+
+    private findBlockForIndentLevel(indentLevel : number) : symbols.BlockSymbol {
+        console.log(this.deepestBlock);
+        
+        console.log(`Indent level: ${this.indentLevel}`);
+        let block = this.deepestBlock;
+        let found = null;
+        
+        while (block != null) {
+            if (block.indentLevel == indentLevel) {
+                found = block;
+                break;
+            }
+            block = block.parent as symbols.BlockSymbol;
+        }
+
+        return found;
+    }
+
+    public visitComment(comment : symbols.Comment) {
+        // Not implemented
+    }
+
+    private visitDeclaration(declaration : symbols.DeclarationSymbol) {
+                
+    }
+
+    public visitDocument(document : symbols.Document) {
+        // Not implemented
+    }
+
+    public visitEqualSign(equalSign : symbols.EqualSign) {
+        // Not implemented
+    }
+
+    public visitIdentifier(identifier : symbols.Identifier) {
+        // Not implemented
+    }
+
+    public visitStatement(statement : symbols.StatementSymbol) {
+        if (this.currentBlock == null) {
+            this.currentBlock = new symbols.BlockSymbol(
+                statement.lineNumber,
+                null,
+                statement.position,
+                ""
+            );
+
+            this.deepestBlock = this.currentBlock;
+            statement.parent = this.currentBlock;
+            this.currentBlock.children.push(statement);
+
+            this.symbolList.replaceNode(new Node(this.currentBlock), this.currentNode);
+
+            return;
+        }
+
+        let block = this.findBlockForIndentLevel(this.indentLevel);
+        if (block == null) {
+            let childBlock = new symbols.BlockSymbol(
+                statement.lineNumber,
+                this.currentBlock,
+                statement.position,
+                ""
+            );
+
+            childBlock.indentLevel = this.indentLevel;
+            childBlock.children.push(statement);
+            statement.parent = childBlock;
+            this.currentBlock.children.push(childBlock);
+
+            this.indentLevel = 0;
+            this.symbolList.removeNode(this.currentNode);
+
+            this.deepestBlock = this.deepestBlock.indentLevel < childBlock.indentLevel
+                ? block
+                : this.deepestBlock;
+
+            return;            
+        }
+
+        statement.parent = block;
+        block.children.push(statement);
+        this.currentBlock = block;
+        this.symbolList.removeNode(this.currentNode);
+        this.indentLevel = 0;
+
+        this.deepestBlock = this.deepestBlock.indentLevel < block.indentLevel
+            ? block
+            : this.deepestBlock;
+    }
+
+    public visitSymbolList() {
+        let node = this.symbolList.head;
+        while (node != null) {
+            this.currentNode = node;
+            node.value.visit(this);
+            node = node.next;
+        }
+    }
+
+    public visitTab(tab : symbols.TabSymbol) {
+        this.indentLevel++;
+        this.symbolList.removeNode(this.currentNode);
+        console.log("Taaaaaab!");
+    }
+
+    public visitType(type : symbols.Type) {
+        // Not implemented
     }
 }
 
@@ -50,7 +173,17 @@ export class Parser {
         // Fourth round, convert to statements
         this.handleStatements(symbolList);
 
+        // Fifth round, group statements into blocks
+        this.handleBlocks(symbolList);
+
+        printSymbols(symbolList);
+
         return null;
+    }
+
+    private handleBlocks(symbolList : LinkedList<symbols.ISymbol>) {
+        let blockVisitor = new BlockVisitor(symbolList);
+        blockVisitor.visitSymbolList();
     }
 
     private handleEqualSign(symbolList : LinkedList<symbols.ISymbol>) {

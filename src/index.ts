@@ -6,11 +6,11 @@ import {Lexer} from "./Lexer";
 import {Parser} from "./Parser";
 
 fs.readFile("program.txt", "utf8", (err, data) => {
-    console.log(data);
+    //console.log(data);
     
     let lexer = new Lexer();
     let tokens = lexer.lex(data);
-    //console.log(tokens);
+    console.log(tokens);
 
     let parser = new Parser(tokens, data);
     let document = parser.parse();
