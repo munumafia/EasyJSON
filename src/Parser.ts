@@ -260,14 +260,14 @@ export class Parser {
         let node = symbolList.head;
         while (node != null) {
             let symbol = node.value;
-            if (symbol instanceof symbols.AssignmentSymbol) {
-                let identifier = symbol.leftHandSide as symbols.Identifier;
-                if (!identifier.type) {
-                    identifier.type = symbols.Type
-                        .createFromValue(symbol.rightHandSide);                        
-                }
-            }
-
+            if (!(symbol instanceof symbols.AssignmentSymbol)) {
+                node = node.next;
+                continue;
+            } 
+            
+            let identifier = symbol.leftHandSide as symbols.Identifier;
+            if (!identifier.type) identifier.type = symbols.Type.createFromValue(symbol.rightHandSide);       
+        
             node = node.next;
         }
     }
