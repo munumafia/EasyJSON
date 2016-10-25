@@ -134,7 +134,6 @@ class BlockVisitor implements IVisitor {
     public visitTab(tab : symbols.TabSymbol) {
         this.indentLevel++;
         this.symbolList.removeNode(this.currentNode);
-        console.log("Taaaaaab!");
     }
 
     public visitType(type : symbols.Type) {
@@ -164,19 +163,11 @@ export class Parser {
             symbolList.push(node);
         });
 
-        // Second round, handle any identifiers
         this.handleIdentifiers(symbolList);
-        
-        // Third round, handle any assignments
         this.handleEqualSign(symbolList);
-        
-        // Fourth round, convert to statements
         this.handleStatements(symbolList);
-
-        // Fifth round, group statements into blocks
+        this.handleTypeInference(symbolList);
         this.handleBlocks(symbolList);
-
-        printSymbols(symbolList);
 
         return null;
     }
@@ -259,6 +250,22 @@ export class Parser {
                 node = node.next;
                 
                 continue;
+            }
+
+            node = node.next;
+        }
+    }
+
+    private handleTypeInference(symbolList : LinkedList<symbols.ISymbol>) {
+        let node = symbolList.head;
+        while (node != null) {
+            let symbol = node.value;
+            if (symbol instanceof symbols.AssignmentSymbol) {
+                let identifier = symbol.leftHandSide as symbols.Identifier;
+                if (!identifier.type) {
+                    identifier.type = symbols.Type
+                        .createFromValue(symbol.rightHandSide);                        
+                }
             }
 
             node = node.next;
