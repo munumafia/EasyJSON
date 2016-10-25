@@ -202,7 +202,7 @@ export class TabSymbol extends Symbol {
 
 export class Type extends Symbol {
     public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
-        super(lineNumber, parent, position, SymbolType.EqualSign, text);        
+        super(lineNumber, parent, position, SymbolType.Type, text);        
     }
 
     public static createFromValue(value : ValueSymbol) : Type {
