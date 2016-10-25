@@ -205,6 +205,25 @@ export class Type extends Symbol {
         super(lineNumber, parent, position, SymbolType.EqualSign, text);        
     }
 
+    public static createFromValue(value : ValueSymbol) : Type {
+        let text : string;
+        let typeToText : { [id: string] : string } = { };
+        
+        // Better way to do this? Don't want to have to keep adding to this
+        // dictionary in the future if I don't have to
+        typeToText[SymbolType.Bool] = "bool";
+        typeToText[SymbolType.Date] = "date";
+        typeToText[SymbolType.Number] = "number";
+        typeToText[SymbolType.String] = "string";
+
+        text = typeToText[value.symbolType];
+        if (!text) throw new Error(`Unknown value type ${SymbolType[value.symbolType]}`);
+        
+        // Need to properly calculate where this would have appeared
+        // in the program input some time down the road? Or would it really matter
+        return new Type(value.lineNumber, value.parent, value.position, text);    
+    }
+
     public visit(visitor : IVisitor) {
         // To do
     }
