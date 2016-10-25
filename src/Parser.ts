@@ -3,6 +3,7 @@ import {TokenType} from "./Lexer";
 import * as symbols from "./Symbols"
 import {Node, LinkedList} from "./LinkedList"
 import {IVisitor} from "./Visitors"
+import {SemanticAnalyzer} from "./SemanticAnalysis"
 
 function printList(list : LinkedList<symbols.ISymbol>) {
     let node = list.head;
@@ -167,6 +168,7 @@ export class Parser {
         this.handleEqualSign(symbolList);
         this.handleStatements(symbolList);
         this.handleTypeInference(symbolList);
+        this.handleSemanticAnalysis(symbolList);
         this.handleBlocks(symbolList);
 
         return null;
@@ -225,6 +227,11 @@ export class Parser {
 
             node = node.next;
         } 
+    }
+
+    private handleSemanticAnalysis(symbolList : LinkedList<symbols.ISymbol>) {
+        let analyzer = new SemanticAnalyzer();
+        analyzer.analyze(symbolList);
     }
 
     private handleStatements(symbolList : LinkedList<symbols.ISymbol>) {
