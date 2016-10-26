@@ -20,12 +20,12 @@ export class SemanticAnalyzer {
         let lhs = symbol.leftHandSide as symbols.Identifier;
         let rhs = symbol.rightHandSide as symbols.ValueSymbol;
 
-        if (lhs.type.symbolType != rhs.symbolType)
+        if (lhs.type.underlyingType != rhs.symbolType)
         {
             let valueType = symbols.SymbolType[rhs.symbolType];
-            let identifierType = symbols.SymbolType[lhs.type.symbolType];
+            let identifierType = symbols.SymbolType[lhs.type.underlyingType];
 
-            let message = `Assignment error: Expected value type of ${valueType} but ${lhs.text} is of type ${identifierType}`;
+            let message = `Assignment error: Expected value type of ${valueType} but ${lhs.text} value is of type ${identifierType}`;
             throw new Error(message);
         }
     }
