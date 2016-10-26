@@ -201,14 +201,30 @@ export class TabSymbol extends Symbol {
 }
 
 export class Type extends Symbol {
+    public underlyingType : SymbolType;
+
     public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
-        super(lineNumber, parent, position, SymbolType.Type, text);        
+        super(lineNumber, parent, position, SymbolType.Type, text);
+
+        let textToType : { [id: string] : SymbolType } = { };
+
+        textToType["bool"] = SymbolType.Bool;
+        textToType["date"] = SymbolType.Date;
+        textToType["number"] = SymbolType.Number;
+        textToType["string"] = SymbolType.String;
+
+        if (!textToType.hasOwnProperty(text)) {
+            let message = `Couldn't determine underlying type for text "${text}"`;
+            throw new Error(message);
+        }
+
+        this.underlyingType = textToType[text];            
     }
 
     public static createFromValue(value : ValueSymbol) : Type {
         let text : string;
         let typeToText : { [id: string] : string } = { };
-        
+                
         // Better way to do this? Don't want to have to keep adding to this
         // dictionary in the future if I don't have to
         typeToText[SymbolType.Bool] = "bool";
@@ -218,7 +234,7 @@ export class Type extends Symbol {
 
         text = typeToText[value.symbolType];
         if (!text) throw new Error(`Unknown value type ${SymbolType[value.symbolType]}`);
-        
+
         // Need to properly calculate where this would have appeared
         // in the program input some time down the road? Or would it really matter
         return new Type(value.lineNumber, value.parent, value.position, text);    
