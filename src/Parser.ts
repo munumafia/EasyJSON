@@ -2,7 +2,7 @@ import {Token} from "./Lexer";
 import {TokenType} from "./Lexer";
 import * as symbols from "./Symbols"
 import {Node, LinkedList} from "./LinkedList"
-import {IVisitor} from "./Visitors"
+import {Visitor} from "./Visitors"
 import {SemanticAnalyzer} from "./SemanticAnalysis"
 
 function printList(list : LinkedList<symbols.ISymbol>) {
@@ -21,7 +21,7 @@ function printSymbols(list : LinkedList<symbols.ISymbol>) {
     }
 }
 
-class BlockVisitor implements IVisitor {
+class BlockVisitor extends Visitor {
     private currentBlock : symbols.BlockSymbol = null;
     private currentNode : Node<symbols.ISymbol>;
     private deepestBlock : symbols.BlockSymbol = null;
@@ -29,13 +29,14 @@ class BlockVisitor implements IVisitor {
     private symbolList : LinkedList<symbols.ISymbol>;
 
     public constructor(symbolList : LinkedList<symbols.ISymbol>) {
+        super();
         this.symbolList = symbolList;
     }
 
     private findBlockForIndentLevel(indentLevel : number) : symbols.BlockSymbol {
-        console.log(this.deepestBlock);
+        //console.log(this.deepestBlock);
         
-        console.log(`Indent level: ${this.indentLevel}`);
+        //console.log(`Indent level: ${this.indentLevel}`);
         let block = this.deepestBlock;
         let found = null;
         
@@ -48,26 +49,6 @@ class BlockVisitor implements IVisitor {
         }
 
         return found;
-    }
-
-    public visitComment(comment : symbols.Comment) {
-        // Not implemented
-    }
-
-    private visitDeclaration(declaration : symbols.DeclarationSymbol) {
-                
-    }
-
-    public visitDocument(document : symbols.Document) {
-        // Not implemented
-    }
-
-    public visitEqualSign(equalSign : symbols.EqualSign) {
-        // Not implemented
-    }
-
-    public visitIdentifier(identifier : symbols.Identifier) {
-        // Not implemented
     }
 
     public visitStatement(statement : symbols.StatementSymbol) {
@@ -106,7 +87,7 @@ class BlockVisitor implements IVisitor {
             this.symbolList.removeNode(this.currentNode);
 
             this.deepestBlock = this.deepestBlock.indentLevel < childBlock.indentLevel
-                ? block
+                ? childBlock
                 : this.deepestBlock;
 
             return;            
@@ -136,10 +117,6 @@ class BlockVisitor implements IVisitor {
         this.indentLevel++;
         this.symbolList.removeNode(this.currentNode);
     }
-
-    public visitType(type : symbols.Type) {
-        // Not implemented
-    }
 }
 
 export class Parser {
@@ -168,8 +145,8 @@ export class Parser {
         this.handleEqualSign(symbolList);
         this.handleStatements(symbolList);
         this.handleTypeInference(symbolList);
-        this.handleSemanticAnalysis(symbolList);
         this.handleBlocks(symbolList);
+        this.handleSemanticAnalysis(symbolList);        
 
         return null;
     }
