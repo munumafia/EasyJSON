@@ -65,7 +65,7 @@ export class BlockSymbol extends Symbol {
     }
 
     public visit(visitor : IVisitor) {
-        // To do
+        visitor.visitBlock(this);
     }
 }
 
