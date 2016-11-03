@@ -192,11 +192,11 @@ export class Lexer {
             { pattern: /.*/, tokenType: TokenType.Unknown }
         ];
 
-        let match = mappings.find(element => {
-            return element.pattern.test(lexeme);
-        });
-
-        return new Token(match.tokenType, lexeme, this.lineNumber, this.position);
+        for (let mapping of mappings) {
+            if (mapping.pattern.test(lexeme)) {
+                return new Token(mapping.tokenType, lexeme, this.lineNumber, this.position);
+            }
+        }        
     }
 
     private peekNext() : string {

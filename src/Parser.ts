@@ -128,7 +128,7 @@ export class Parser {
         this.document = new symbols.Document(programText);
     }
 
-    public parse() : Document {
+    public parse() : LinkedList<symbols.ISymbol> {
         let document = this.document;
         let mapper = new symbols.TokenToSymbolMapper();
 
@@ -148,7 +148,7 @@ export class Parser {
         this.handleBlocks(symbolList);
         this.handleSemanticAnalysis(symbolList);        
 
-        return null;
+        return symbolList;
     }
 
     private handleBlocks(symbolList : LinkedList<symbols.ISymbol>) {

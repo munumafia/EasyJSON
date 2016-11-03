@@ -156,8 +156,8 @@ export abstract class StatementSymbol extends Symbol {
 }
 
 export class AssignmentSymbol extends StatementSymbol {
-    public leftHandSide : ISymbol = null;
-    public rightHandSide : ISymbol = null;
+    public leftHandSide : Identifier = null;
+    public rightHandSide : ValueSymbol = null;
 
     public constructor(lineNumber : number, parent : ISymbol, position : number, text : string) {
         super(lineNumber, parent, position, SymbolType.Assignment, text);        

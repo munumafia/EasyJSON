@@ -4,6 +4,7 @@ let fs = require('fs');
 
 import {Lexer} from "./Lexer";
 import {Parser} from "./Parser";
+import JsonCompiler from "./Compiler";
 
 fs.readFile("program.txt", "utf8", (err, data) => {
     //console.log(data);
@@ -15,4 +16,9 @@ fs.readFile("program.txt", "utf8", (err, data) => {
     let parser = new Parser(tokens, data);
     let document = parser.parse();
     //console.log(document);
+
+    let compiler = new JsonCompiler(document);
+    let output = compiler.compile(2);
+
+    console.log(output);
 });
