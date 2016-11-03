@@ -49,6 +49,8 @@ class SymbolVisitor extends Visitor {
 
         this.output += this.repeatText(this.indentSpaces, block.indentLevel);
         this.output += "}\n";
+
+        this.scopeStack.pop();
     }
 
     visitStatement(statement : symbols.StatementSymbol) {
